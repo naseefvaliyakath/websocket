@@ -1,5 +1,4 @@
 const orders = require('./model/orders');
-
 module.exports = (io, socket) => {
    
         console.log('connected success fully' + socket.id)
@@ -29,6 +28,7 @@ module.exports = (io, socket) => {
           //add in db and send to user
           try {
             const mongoData = new orders({
+              fdShopId: data.fdShopId,
               fdOrder: data.fdOrder,
               fdOrderStatus: data.fdOrderStatus,
               fdOrderType: data.fdOrderType,
@@ -40,14 +40,27 @@ module.exports = (io, socket) => {
                 return
               }
               callback('success')
-              io.emit('message-recive', data)
-              //console.log(result)
+              var sum = result.fdOrder.map(item => item.price * item.qnt ).reduce((prev, next) => prev + next,0);            
+              var newResult = {
+                "_id":result._id,
+                "error":false,
+                "errorCode":"no",
+                "totalSize":1,
+                "fdOrderStatus":result.fdOrderStatus,
+                "fdOrderType":result.fdOrderType,
+                "totelPrice":sum,
+                "fdOrder":result.fdOrder
+                
+              }
+              
+              console.log(newResult)
+              io.emit('kitchen_orders_recive', newResult)
             });
-      
+
           }
           catch (error) {
-            
             throw error
+            console.log(error)
           }
       
         })

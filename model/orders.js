@@ -1,7 +1,13 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const orderSchema = new mongoose.Schema({
-    //need id wirh uniqe
+
+    _id: Number,
+    fdShopId: {
+        required: true,
+        type: Number,
+    },
     fdOrder: {
         required: true,
         type: [],
@@ -15,5 +21,5 @@ const orderSchema = new mongoose.Schema({
         type: String
     }
 })
-
+orderSchema.plugin(AutoIncrement);
 module.exports = mongoose.model('restaurent_orders', orderSchema)
